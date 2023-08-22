@@ -17,10 +17,8 @@ class MovieService {
             val builder = OkHttpClient.Builder()
             builder.addInterceptor { chain ->
                 val request = chain.request().newBuilder()
-                val originalHttpUrl = chain.request().url()
-                val url = originalHttpUrl.newBuilder()
-                    .addQueryParameter("api_key", API_KEY).build()
-                request.url(url)
+                    .addHeader("accept", "application/json")
+                    .addHeader("Authorization", "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIxZmVjZGVhOWVjOTY1YWE3NDM3NzEzMzg4YmZkODQxOCIsInN1YiI6IjU5YjQyMTcwYzNhMzY4NGMzYTAwMWUwNSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.f8wIQnErvwy01UTUenxKS-KYReg11H2gGRKGGQvVaUI")
                 chain.proceed(request.build())
             }
             return builder.build()
@@ -28,7 +26,6 @@ class MovieService {
 
     companion object {
         private const val BASE_IMAGE_URL = "https://image.tmdb.org/t/p/original"
-        private const val API_KEY = "d0bfa2d663af7a94e515085e33ab9615"
         fun getFullImageUrl(path: String): String {
             return BASE_IMAGE_URL + path
         }
