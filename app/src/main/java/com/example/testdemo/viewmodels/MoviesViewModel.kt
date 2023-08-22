@@ -23,7 +23,6 @@ class MoviesViewModel : ViewModel() {
     private val movieService: MovieService = MovieService()
     private val movieApi: MovieApi = movieService.movieApi
     private val moviesStateFlow: MutableStateFlow<List<Movie>> = MutableStateFlow(ArrayList())
-    private val movies: ArrayList<Movie> = ArrayList()
 
     fun requestTrendingMovies() {
         //TODO: Cache trending movies for 24 hours
@@ -43,7 +42,6 @@ class MoviesViewModel : ViewModel() {
                 CoroutineScope(Dispatchers.Main).launch {
                     val movieList: List<Movie>? = response?.body()?.results
                     if (movieList != null) {
-                        movies.addAll(movieList)
                         moviesStateFlow.value = movieList
                     }
                 }
@@ -70,7 +68,6 @@ class MoviesViewModel : ViewModel() {
                 CoroutineScope(Dispatchers.Main).launch {
                     val movieList: List<Movie>? = response?.body()?.results
                     if (movieList != null) {
-                        movies.addAll(movieList)
                         moviesStateFlow.value = movieList
                     }
                 }
@@ -84,6 +81,8 @@ class MoviesViewModel : ViewModel() {
     fun getMoviesStateFlow(): MutableStateFlow<List<Movie>> {
         return moviesStateFlow
     }
+
+    fun hasMovies(): Boolean { return moviesStateFlow.value.isNotEmpty()}
 
     fun launchMovieFragment(fragment: Fragment, movie: Movie) {
         //TODO: Add shared element transition

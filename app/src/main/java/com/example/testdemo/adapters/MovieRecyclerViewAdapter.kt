@@ -1,9 +1,11 @@
 package com.example.testdemo.adapters
 
+import android.opengl.Visibility
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.TextView
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -29,12 +31,23 @@ class MovieRecyclerViewAdapter(listener: MovieItemClickListener) : RecyclerView.
         val movie = mAsyncListDiffer.currentList[position]
         holder.view.setOnClickListener { listener.onMovieItemClicked(movie)}
 
-        movie.posterPath?.let {
+        if (movie.posterPath != null) {
             Glide
                 .with(holder.ivMoviePoster!!.context)
                 .load(MovieService.getFullImageUrl(movie.posterPath))
                 .into(holder.ivMoviePoster)
+        } else {
+            holder.ivMoviePoster.visibility = View.GONE
+            holder.tvMovieTitle.visibility = View.VISIBLE
+            holder.tvMovieTitle.text = movie.title
         }
+    }
+    override fun onViewRecycled(holder: MovieAdapterViewHolder) {
+        super.onViewRecycled(holder)
+        holder.tvMovieTitle.text = null
+        holder.tvMovieTitle.visibility = View.GONE
+        holder.ivMoviePoster.setImageURI(null)
+        holder.ivMoviePoster.visibility = View.VISIBLE
     }
 
     fun updateData(data: List<Movie>) {
@@ -60,10 +73,12 @@ private class DiffCallback : DiffUtil.ItemCallback<Movie>() {
 
 class MovieAdapterViewHolder(parentView : View) : RecyclerView.ViewHolder(parentView) {
     var ivMoviePoster: ImageView
+    var tvMovieTitle: TextView
     val view: View
 
     init {
         view = parentView
         ivMoviePoster = itemView.requireViewById(R.id.ivMoviePoster) as ImageView
+        tvMovieTitle = itemView.requireViewById(R.id.tvMovieTitle) as TextView
     }
 }

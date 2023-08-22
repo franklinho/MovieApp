@@ -25,6 +25,7 @@ tools:context=".fragments.ItemFragment"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toBottomOf="@id/ivMoviePoster"
         app:layout_constraintLeft_toLeftOf="parent"
+        android:textAlignment="viewStart"
         android:layout_margin="10dp"
         android:textStyle="bold"
         />
@@ -35,7 +36,9 @@ tools:context=".fragments.ItemFragment"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toBottomOf="@id/tvTitle"
         app:layout_constraintLeft_toLeftOf="parent"
-        android:layout_margin="10dp"
+        app:layout_constraintRight_toRightOf="parent"
+        android:textAlignment="viewStart"
+        android:padding="10dp"
         />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
