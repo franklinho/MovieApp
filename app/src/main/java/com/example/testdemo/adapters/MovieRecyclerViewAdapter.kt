@@ -4,40 +4,54 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.recyclerview.widget.AsyncListDiffer
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.testdemo.R
+import com.example.testdemo.databinding.MovieRecyclerviewItemBinding
 import com.example.testdemo.models.Movie
 
 class MovieRecyclerViewAdapter(listener: MovieItemClickListener) : RecyclerView.Adapter<MovieAdapterViewHolder>() {
-    private val movies = mutableListOf<Movie>()
+    var diffUtilCallback: DiffUtil.ItemCallback<Movie> = DiffCallback()
+    private val mAsyncListDiffer = AsyncListDiffer(this, diffUtilCallback)
     private val listener = listener
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MovieAdapterViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.movie_recyclerview_item, parent, false)
+        val context = parent.context
+        val inflater = LayoutInflater.from(context)
+        val binding = MovieRecyclerviewItemBinding.inflate(inflater)
+        val view = binding.root
         return MovieAdapterViewHolder(view)
     }
 
     override fun getItemCount(): Int {
-        return movies.size
+        return mAsyncListDiffer.currentList.size
     }
 
     override fun onBindViewHolder(holder: MovieAdapterViewHolder, position: Int) {
-        val movie = movies[position]
+        val movie = mAsyncListDiffer.currentList[position]
         holder.textView.text = movie.title
         holder.view.setOnClickListener { listener.onMovieItemClicked(movie)}
     }
 
     fun updateData(data: List<Movie>) {
-        val previousContentSize = movies.size
-        movies.clear()
-        notifyItemRangeRemoved(0, previousContentSize)
-        movies.addAll(data)
-        notifyItemRangeInserted(0, data.size)
+        mAsyncListDiffer.submitList(data)
     }
 
 }
 
 interface MovieItemClickListener {
     fun onMovieItemClicked(movie : Movie)
+}
+
+//TODO: Add pagination
+private class DiffCallback : DiffUtil.ItemCallback<Movie>() {
+    override fun areContentsTheSame(oldItem: Movie, newItem: Movie): Boolean {
+        return oldItem.id == newItem.id
+    }
+
+    override fun areItemsTheSame(oldItem: Movie, newItem: Movie): Boolean {
+        return oldItem.id === newItem.id
+    }
 }
 
 class MovieAdapterViewHolder(parentView : View) : RecyclerView.ViewHolder(parentView) {
