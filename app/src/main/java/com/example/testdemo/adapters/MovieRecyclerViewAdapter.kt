@@ -6,9 +6,10 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.testdemo.R
+import com.example.testdemo.models.Movie
 
 class MovieRecyclerViewAdapter(listener: MovieItemClickListener) : RecyclerView.Adapter<MovieAdapterViewHolder>() {
-    private val movies = mutableListOf<String>()
+    private val movies = mutableListOf<Movie>()
     private val listener = listener
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MovieAdapterViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.movie_recyclerview_item, parent, false)
@@ -20,13 +21,15 @@ class MovieRecyclerViewAdapter(listener: MovieItemClickListener) : RecyclerView.
     }
 
     override fun onBindViewHolder(holder: MovieAdapterViewHolder, position: Int) {
-        val title = movies[position]
-        holder.textView.text = title
-        holder.view.setOnClickListener { listener.onMovieItemClicked(title)}
+        val movie = movies[position]
+        holder.textView.text = movie.title
+        holder.view.setOnClickListener { listener.onMovieItemClicked(movie)}
     }
 
-    fun updateData(data: List<String>) {
+    fun updateData(data: List<Movie>) {
+        val previousContentSize = movies.size
         movies.clear()
+        notifyItemRangeRemoved(0, previousContentSize)
         movies.addAll(data)
         notifyItemRangeInserted(0, data.size)
     }
@@ -34,7 +37,7 @@ class MovieRecyclerViewAdapter(listener: MovieItemClickListener) : RecyclerView.
 }
 
 interface MovieItemClickListener {
-    fun onMovieItemClicked(movieTitle : String)
+    fun onMovieItemClicked(movie : Movie)
 }
 
 class MovieAdapterViewHolder(parentView : View) : RecyclerView.ViewHolder(parentView) {

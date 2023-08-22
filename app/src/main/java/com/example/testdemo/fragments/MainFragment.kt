@@ -12,9 +12,15 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.testdemo.R
 import com.example.testdemo.adapters.MovieItemClickListener
 import com.example.testdemo.adapters.MovieRecyclerViewAdapter
+import com.example.testdemo.models.Movie
+import com.example.testdemo.viewmodels.MoviesViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 
 class MainFragment : Fragment(), MovieItemClickListener {
+    private var moviesViewModel : MoviesViewModel = MoviesViewModel()
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -29,13 +35,16 @@ class MainFragment : Fragment(), MovieItemClickListener {
         val recyclerView: RecyclerView = view.findViewById(R.id.movie_recyclerview)
         recyclerView.layoutManager = LinearLayoutManager(context)
         recyclerView.adapter = movieAdapter
-        movieAdapter.updateData(listOf("Batman", "The Godfather", "Star Wars", "Indiana Jones"))
+        moviesViewModel.requestTrendingMovies()
+        CoroutineScope(Dispatchers.Main).launch {
+            moviesViewModel.getMoviesStateFlow().collect {
+                movieAdapter.updateData(it)
+            }
+        }
     }
 
-    override fun onMovieItemClicked(movieTitle: String) {
-        Log.d("DEBUG", movieTitle)
-        val action = MainFragmentDirections.actionMainFragmentToItemFragment(movieTitle)
-        this.requireView().findNavController().navigate(action)
+    override fun onMovieItemClicked(movie: Movie) {
+        moviesViewModel.launchMovieFragment(this, movie)
     }
 
 

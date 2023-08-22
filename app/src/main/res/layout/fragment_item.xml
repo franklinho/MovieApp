@@ -1,16 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".fragments.ItemFragment">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+    <data>
+    </data>
+<androidx.constraintlayout.widget.ConstraintLayout
+android:layout_width="match_parent"
+android:layout_height="match_parent"
+tools:context=".fragments.ItemFragment"
+    android:background="@color/white">
 
-    <!-- TODO: Update blank fragment layout -->
+    <ImageView
+        android:id="@+id/ivMoviePoster"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintDimensionRatio="3000:1688"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+
     <TextView
-        android:id="@+id/movie_title_textview"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/movie_title_placeholder"
-        android:gravity="center"/>
+        android:id="@+id/tvTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/ivMoviePoster"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:layout_margin="10dp"
+        android:textStyle="bold"
+        />
 
-</FrameLayout>
+    <TextView
+        android:id="@+id/tvOverview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/tvTitle"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:layout_margin="10dp"
+        />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

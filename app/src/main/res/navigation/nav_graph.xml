@@ -11,7 +11,11 @@
         tools:layout="@layout/fragment_main" >
         <action
             android:id="@+id/action_mainFragment_to_itemFragment"
-            app:destination="@id/itemFragment" />
+            app:destination="@id/itemFragment"
+            app:enterAnim="@android:anim/slide_in_left"
+            app:exitAnim="@android:anim/slide_out_right"
+            app:popEnterAnim="@android:anim/slide_in_left"
+            app:popExitAnim="@android:anim/slide_out_right" />
     </fragment>
     <fragment
         android:id="@+id/itemFragment"
@@ -22,6 +26,19 @@
             android:name="movieTitle"
             app:argType="string"
             android:defaultValue=""
+            app:nullable="true"
+            />
+        <argument
+            android:name="moviePoster"
+            app:argType="string"
+            android:defaultValue=""
+            app:nullable="true"
+            />
+        <argument
+            android:name="movieOverview"
+            app:argType="string"
+            android:defaultValue=""
+            app:nullable="true"
             />
     </fragment>
 </navigation>
