@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.navArgs
 import com.bumptech.glide.Glide
 import com.example.testdemo.databinding.FragmentItemBinding
+import com.example.testdemo.models.Movie
 import com.example.testdemo.networking.MovieService
 import org.parceler.Parcels
 
@@ -28,9 +29,9 @@ class ItemFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val ivMoviePoster = binding!!.ivMoviePoster
-        val tvTitle = binding!!.tvTitle
-        val tvOverview = binding!!.tvOverview
+        val ivMoviePoster = binding.ivMoviePoster
+        val tvTitle = binding.tvTitle
+        val tvOverview = binding.tvOverview
 
         args.moviePoster?.let {
             Glide

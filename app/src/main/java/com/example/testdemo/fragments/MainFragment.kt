@@ -21,13 +21,15 @@ import kotlinx.coroutines.launch
 
 
 class MainFragment : Fragment(), MovieItemClickListener {
-    private var moviesViewModel : MoviesViewModel = MoviesViewModel()
+    private lateinit var moviesViewModel : MoviesViewModel
+    private lateinit var movieAdapter : MovieRecyclerViewAdapter
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_main, container, false)
+        moviesViewModel = MoviesViewModel(requireActivity().applicationContext)
         val etSearch: EditText? = view.requireViewById(R.id.etSearch)
         etSearch!!.setOnEditorActionListener { textView, _, _ ->
             val query = textView.text.toString()
@@ -41,7 +43,7 @@ class MainFragment : Fragment(), MovieItemClickListener {
             false
         }
 
-        val movieAdapter = MovieRecyclerViewAdapter(this)
+        movieAdapter = MovieRecyclerViewAdapter(this)
         val recyclerView: RecyclerView = view.requireViewById(R.id.rvRecycler)
         recyclerView.layoutManager = GridLayoutManager(context, 3)
         recyclerView.adapter = movieAdapter
@@ -53,7 +55,6 @@ class MainFragment : Fragment(), MovieItemClickListener {
         }
         return view
     }
-
     override fun onMovieItemClicked(movie: Movie) {
         moviesViewModel.launchMovieFragment(this, movie)
     }
