@@ -1,14 +1,13 @@
 package com.example.testdemo.viewmodels
 
-import android.app.Activity
 import android.content.Context
-import android.content.Intent
 import android.util.Log
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.findNavController
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.room.Database
 import com.example.testdemo.data.DatabaseBuilder
 import com.example.testdemo.data.DatabaseHelperImpl
@@ -16,6 +15,7 @@ import com.example.testdemo.fragments.MainFragmentDirections
 import com.example.testdemo.models.Movie
 import com.example.testdemo.networking.MovieApi
 import com.example.testdemo.networking.MovieService
+import com.example.testdemo.recyclerview.InfiniteScrollListener
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -26,13 +26,27 @@ import kotlinx.coroutines.launch
 import org.parceler.Parcels
 
 
-class MoviesViewModel(context: Context) : ViewModel() {
+class MoviesViewModel(context: Context, gridLayoutManager: GridLayoutManager) : ViewModel(){
     private val movieService: MovieService = MovieService()
     private val movieApi: MovieApi = movieService.movieApi
     private val moviesStateFlow: MutableStateFlow<List<Movie>> = MutableStateFlow(ArrayList())
-    private val dbHelperImpl = DatabaseHelperImpl(DatabaseBuilder.getInstance(context))
+//    private val dbHelperImpl = DatabaseHelperImpl(DatabaseBuilder.getInstance(context))
+    private var isDataLoading = false
+    private var currentPageCount = 1
+    val infiniteScrollListener = object: InfiniteScrollListener(gridLayoutManager) {
+        override fun onLoadMore() {
+            currentPageCount++
+            requestMoviesFromServer(null, currentPageCount)
+        }
+
+        override fun isDataLoading(): Boolean {
+            return isDataLoading
+        }
+
+    }
 
     fun requestTrendingMovies() {
+        currentPageCount = 1
         //TODO: Cache trending movies for 24 hours
 //        viewModelScope.launch {
 //            dbHelperImpl
@@ -51,22 +65,25 @@ class MoviesViewModel(context: Context) : ViewModel() {
 //                    }
 //                }
 //            }
-        requestMoviesFromServer(null)
+        requestMoviesFromServer(null, currentPageCount)
     }
 
     private fun updateMovies(movieList : List<Movie>) {
         CoroutineScope(Dispatchers.Main).launch {
-            moviesStateFlow.value = movieList
+            val currentMovies = moviesStateFlow.value
+            moviesStateFlow.value =  currentMovies + movieList
         }
+        isDataLoading = false
     }
 
     fun searchMovies(query: String?) {
-        requestMoviesFromServer(query)
+        requestMoviesFromServer(query, 1)
     }
 
-    private fun requestMoviesFromServer(query : String ?) {
+    private fun requestMoviesFromServer(query : String ?, page: Int) {
+        isDataLoading = true
         CoroutineScope(Dispatchers.IO).launch {
-            val call = if (query == null) movieApi.trendingMovies else movieApi.searchMovies(query)
+            val call = if (query == null) movieApi.trendingMovies(currentPageCount) else movieApi.searchMovies(query, page)
             val tag = if (query == null) "MovieService/TrendingApi" else "MovieService/SearchAPI"
 
             try {
@@ -109,4 +126,5 @@ class MoviesViewModel(context: Context) : ViewModel() {
         val action = MainFragmentDirections.actionMainFragmentToItemFragment(movie.title, movie.backdropPath, movie.overview)
         fragment.requireView().findNavController().navigate(action)
     }
+
 }

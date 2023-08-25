@@ -14,6 +14,7 @@ import com.example.testdemo.R
 import com.example.testdemo.adapters.MovieItemClickListener
 import com.example.testdemo.adapters.MovieRecyclerViewAdapter
 import com.example.testdemo.models.Movie
+import com.example.testdemo.recyclerview.InfiniteScrollListener
 import com.example.testdemo.viewmodels.MoviesViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -29,7 +30,8 @@ class MainFragment : Fragment(), MovieItemClickListener {
     ): View? {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_main, container, false)
-        moviesViewModel = MoviesViewModel(requireActivity().applicationContext)
+        val gridLayoutManager = GridLayoutManager(context, 3)
+        moviesViewModel = MoviesViewModel(requireActivity().applicationContext, gridLayoutManager)
         val etSearch: EditText? = view.requireViewById(R.id.etSearch)
         etSearch!!.setOnEditorActionListener { textView, _, _ ->
             val query = textView.text.toString()
@@ -45,7 +47,8 @@ class MainFragment : Fragment(), MovieItemClickListener {
 
         movieAdapter = MovieRecyclerViewAdapter(this)
         val recyclerView: RecyclerView = view.requireViewById(R.id.rvRecycler)
-        recyclerView.layoutManager = GridLayoutManager(context, 3)
+        recyclerView.layoutManager = gridLayoutManager
+//        recyclerView.addOnScrollListener(moviesViewModel.infiniteScrollListener)
         recyclerView.adapter = movieAdapter
         if (!moviesViewModel.hasMovies()) {moviesViewModel.requestTrendingMovies()}
         CoroutineScope(Dispatchers.Main).launch {
@@ -58,6 +61,7 @@ class MainFragment : Fragment(), MovieItemClickListener {
     override fun onMovieItemClicked(movie: Movie) {
         moviesViewModel.launchMovieFragment(this, movie)
     }
+
 
 
 }
