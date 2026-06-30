@@ -20,13 +20,12 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
@@ -44,7 +43,8 @@ fun MovieListScreen(
     modifier: Modifier = Modifier,
 ) {
     val movies = viewModel.movies.collectAsLazyPagingItems()
-    var query by rememberSaveable { mutableStateOf("") }
+    val query by viewModel.searchQuery.collectAsState()
+    val keyboardController = LocalSoftwareKeyboardController.current
 
     Column(
         modifier = modifier
@@ -53,12 +53,12 @@ fun MovieListScreen(
     ) {
         OutlinedTextField(
             value = query,
-            onValueChange = { query = it },
+            onValueChange = viewModel::updateSearchQuery,
             label = { Text("Search movies") },
             singleLine = true,
             modifier = Modifier.fillMaxWidth().padding(8.dp),
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
-            keyboardActions = KeyboardActions(onSearch = { viewModel.searchMovies(query) }),
+            keyboardActions = KeyboardActions(onSearch = { keyboardController?.hide() }),
         )
 
         Box(modifier = Modifier.fillMaxSize()) {
