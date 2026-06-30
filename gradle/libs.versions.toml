@@ -1,5 +1,5 @@
 [versions]
-agp = "8.0.2"
+agp = "8.9.1"
 kotlin = "2.0.21"
 coreKtx = "1.8.0"
 lifecycleRuntimeKtx = "2.3.1"
