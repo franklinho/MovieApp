@@ -1,5 +1,6 @@
 package com.example.testdemo.networking
 
+import com.example.testdemo.BuildConfig
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -18,7 +19,7 @@ class MovieService {
             builder.addInterceptor { chain ->
                 val request = chain.request().newBuilder()
                     .addHeader("accept", "application/json")
-                    .addHeader("Authorization", "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIxZmVjZGVhOWVjOTY1YWE3NDM3NzEzMzg4YmZkODQxOCIsInN1YiI6IjU5YjQyMTcwYzNhMzY4NGMzYTAwMWUwNSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.f8wIQnErvwy01UTUenxKS-KYReg11H2gGRKGGQvVaUI")
+                    .addHeader("Authorization", "Bearer ${BuildConfig.TMDB_TOKEN}")
                 chain.proceed(request.build())
             }
             return builder.build()
