@@ -27,7 +27,9 @@ class MovieRemoteMediator(
     override suspend fun load(loadType: LoadType, state: PagingState<Int, Movie>): MediatorResult {
         return try {
             val page = when (loadType) {
-                LoadType.REFRESH -> remoteKeyClosestToCurrentPosition(state)?.nextKey?.minus(1) ?: 1
+                LoadType.REFRESH -> remoteKeyClosestToCurrentPosition(state)?.let { remoteKey ->
+                    remoteKey.nextKey?.minus(1) ?: remoteKey.prevKey?.plus(1)
+                } ?: 1
                 LoadType.PREPEND -> {
                     val prevKey = remoteKeyForFirstItem(state)?.prevKey
                         ?: return MediatorResult.Success(endOfPaginationReached = true)
