@@ -18,7 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
-import com.example.testdemo.networking.MovieService
+import com.example.testdemo.networking.ImageUrls
 
 @Composable
 fun MovieDetailScreen(
@@ -36,7 +36,7 @@ fun MovieDetailScreen(
     ) {
         if (backdropPath != null) {
             AsyncImage(
-                model = MovieService.getFullImageUrl(backdropPath),
+                model = ImageUrls.fullImageUrl(backdropPath),
                 contentDescription = title,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
