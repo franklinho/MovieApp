@@ -48,6 +48,7 @@ fun MovieAppNavHost(navController: NavHostController = rememberNavController()) 
             MovieDetailScreen(
                 uiState = uiState,
                 onBack = { navController.popBackStack() },
+                onRetry = viewModel::retry,
             )
         }
     }
