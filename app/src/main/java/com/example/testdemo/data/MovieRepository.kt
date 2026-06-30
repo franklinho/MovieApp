@@ -22,11 +22,12 @@ class MovieRepository @Inject constructor(
     private val movieApi: MovieApi,
     private val database: AppDatabase,
     private val movieDao: MovieDao,
+    private val movieRemoteKeyDao: MovieRemoteKeyDao,
 ) {
     @OptIn(ExperimentalPagingApi::class)
     fun trendingPager(): Flow<PagingData<MovieDto>> = Pager(
         config = PagingConfig(pageSize = MovieRemoteMediator.PAGE_SIZE),
-        remoteMediator = MovieRemoteMediator(movieApi, database, movieDao),
+        remoteMediator = MovieRemoteMediator(movieApi, database, movieDao, movieRemoteKeyDao),
         pagingSourceFactory = { movieDao.pagingSource() },
     ).flow.map { pagingData -> pagingData.map { it.toDto() } }
 
