@@ -1,13 +1,10 @@
 package com.example.testdemo.viewmodels
 
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.navigation.findNavController
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.example.testdemo.data.MovieRepository
-import com.example.testdemo.fragments.MainFragmentDirections
 import com.example.testdemo.models.Movie
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -17,9 +14,9 @@ import kotlinx.coroutines.flow.flatMapLatest
 import javax.inject.Inject
 
 /**
- * Slice 5: exposes a single `Flow<PagingData<Movie>>` that switches between the trending
- * (Room-backed, RemoteMediator) and search (network) pagers via [flatMapLatest] on the query.
- * Paging's LoadState supersedes the old MoviesUiState.
+ * Slice 7: pure data surface — exposes a `Flow<PagingData<Movie>>` that switches between the
+ * trending (Room-backed) and search (network) pagers. Navigation now lives in Compose
+ * (MovieAppNavHost), so the old `launchMovieFragment` is gone.
  */
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
@@ -41,12 +38,5 @@ class MoviesViewModel @Inject constructor(
 
     fun searchMovies(query: String?) {
         this.query.value = query
-    }
-
-    fun launchMovieFragment(fragment: Fragment, movie: Movie) {
-        val action = MainFragmentDirections.actionMainFragmentToItemFragment(
-            movie.title, movie.backdropPath, movie.overview
-        )
-        fragment.requireView().findNavController().navigate(action)
     }
 }
