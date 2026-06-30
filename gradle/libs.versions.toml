@@ -3,7 +3,6 @@ agp = "8.9.1"
 kotlin = "2.0.21"
 coreKtx = "1.8.0"
 lifecycleRuntimeKtx = "2.3.1"
-lifecycleExtensions = "2.2.0"
 lifecycleViewmodelCompose = "2.6.1"
 fragmentKtx = "1.4.1"
 recyclerview = "1.2.1"
@@ -13,7 +12,7 @@ retrofit = "2.9.0"
 parceler = "1.1.13"
 glide = "4.16.0"
 glideCompose = "1.0.0-alpha.5"
-activityCompose = "1.8.0-alpha06"
+activityCompose = "1.9.3"
 composeBom = "2024.09.00"
 paging = "3.2.0"
 room = "2.4.3"
@@ -24,7 +23,6 @@ espresso = "3.5.1"
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycleRuntimeKtx" }
-androidx-lifecycle-extensions = { group = "androidx.lifecycle", name = "lifecycle-extensions", version.ref = "lifecycleExtensions" }
 androidx-lifecycle-viewmodel-compose = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-compose", version.ref = "lifecycleViewmodelCompose" }
 androidx-fragment-ktx = { group = "androidx.fragment", name = "fragment-ktx", version.ref = "fragmentKtx" }
 androidx-recyclerview = { group = "androidx.recyclerview", name = "recyclerview", version.ref = "recyclerview" }
