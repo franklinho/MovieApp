@@ -8,6 +8,7 @@ import com.example.testdemo.data.MovieRepository
 import com.example.testdemo.fragments.MainFragmentDirections
 import com.example.testdemo.models.Movie
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -22,7 +23,9 @@ sealed interface MoviesUiState {
 }
 
 /**
- * Slice 3: Hilt-injected, talking to [MovieRepository] (no direct networking).
+ * Slice 4: trending observes the Room cache (source of truth) while a background refresh
+ * writes through; an error only surfaces if the cache can't satisfy the screen. Search is a
+ * one-shot network call.
  */
 @HiltViewModel
 class MoviesViewModel @Inject constructor(
@@ -32,22 +35,40 @@ class MoviesViewModel @Inject constructor(
     private val _uiState = MutableStateFlow<MoviesUiState>(MoviesUiState.Loading)
     val uiState: StateFlow<MoviesUiState> = _uiState.asStateFlow()
 
+    private var loadJob: Job? = null
+
     init {
         requestTrendingMovies()
     }
 
-    fun requestTrendingMovies() = loadMovies(query = null)
-
-    fun searchMovies(query: String?) {
-        if (query.isNullOrEmpty()) requestTrendingMovies() else loadMovies(query)
+    fun requestTrendingMovies() {
+        loadJob?.cancel()
+        loadJob = viewModelScope.launch {
+            launch {
+                try {
+                    repository.refreshTrending()
+                } catch (t: Throwable) {
+                    if (_uiState.value !is MoviesUiState.Success) {
+                        _uiState.value = MoviesUiState.Error(t.localizedMessage ?: "Request failed")
+                    }
+                }
+            }
+            repository.trendingMovies().collect { movies ->
+                if (movies.isNotEmpty()) _uiState.value = MoviesUiState.Success(movies)
+            }
+        }
     }
 
-    private fun loadMovies(query: String?) {
-        _uiState.value = MoviesUiState.Loading
-        viewModelScope.launch {
+    fun searchMovies(query: String?) {
+        if (query.isNullOrEmpty()) {
+            requestTrendingMovies()
+            return
+        }
+        loadJob?.cancel()
+        loadJob = viewModelScope.launch {
+            _uiState.value = MoviesUiState.Loading
             _uiState.value = try {
-                val movies = if (query == null) repository.trendingMovies(1) else repository.searchMovies(query, 1)
-                MoviesUiState.Success(movies)
+                MoviesUiState.Success(repository.searchMovies(query, 1))
             } catch (t: Throwable) {
                 MoviesUiState.Error(t.localizedMessage ?: "Request failed")
             }
