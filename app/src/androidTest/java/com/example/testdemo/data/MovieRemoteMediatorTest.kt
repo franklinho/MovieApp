@@ -90,6 +90,28 @@ class MovieRemoteMediatorTest {
         assertEquals(MovieRemoteKey(movieId = 3, prevKey = 1, nextKey = null), remoteKeyDao.remoteKeyByMovieId(3))
     }
 
+    @Test
+    fun refreshWithEndPageAnchorUsesPreviousKey() = runBlocking {
+        val cachedMovie = movieEntity(id = 3, orderIndex = 0)
+        movieDao.insertAll(listOf(cachedMovie))
+        remoteKeyDao.insertAll(listOf(MovieRemoteKey(movieId = 3, prevKey = 1, nextKey = null)))
+        val api = FakeMovieApi(
+            2 to MoviesResponse(
+                page = 2,
+                totalPages = 2,
+                results = listOf(movieDto(id = 3)),
+            )
+        )
+
+        val result = mediator(api).load(
+            LoadType.REFRESH,
+            pagingStateWithPage(listOf(cachedMovie), anchorPosition = 0),
+        )
+
+        assertSuccess(result, endOfPaginationReached = true)
+        assertEquals(listOf(2), api.requestedPages)
+    }
+
     private fun mediator(api: MovieApi): MovieRemoteMediator =
         MovieRemoteMediator(api, database, movieDao, remoteKeyDao)
 
@@ -101,7 +123,10 @@ class MovieRemoteMediatorTest {
             leadingPlaceholderCount = 0,
         )
 
-    private fun pagingStateWithPage(movies: List<Movie>): PagingState<Int, Movie> =
+    private fun pagingStateWithPage(
+        movies: List<Movie>,
+        anchorPosition: Int? = null,
+    ): PagingState<Int, Movie> =
         PagingState(
             pages = listOf(
                 PagingSource.LoadResult.Page(
@@ -110,7 +135,7 @@ class MovieRemoteMediatorTest {
                     nextKey = 2,
                 )
             ),
-            anchorPosition = null,
+            anchorPosition = anchorPosition,
             config = PagingConfig(pageSize = MovieRemoteMediator.PAGE_SIZE),
             leadingPlaceholderCount = 0,
         )
