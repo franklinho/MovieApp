@@ -33,6 +33,7 @@ class MovieDetailScreenTest {
                         isLoading = false,
                     ),
                     onBack = { backClicked = true },
+                    onRetry = {},
                 )
             }
         }
@@ -42,5 +43,28 @@ class MovieDetailScreenTest {
         composeRule.onNodeWithText("Back").performClick()
 
         assertTrue(backClicked)
+    }
+
+    @Test
+    fun rendersErrorAndHandlesRetryClick() {
+        var retryClicked = false
+
+        composeRule.setContent {
+            TestDemoTheme {
+                MovieDetailScreen(
+                    uiState = MovieDetailUiState(
+                        isLoading = false,
+                        errorMessage = "Network failed",
+                    ),
+                    onBack = {},
+                    onRetry = { retryClicked = true },
+                )
+            }
+        }
+
+        composeRule.onNodeWithText("Network failed").assertIsDisplayed()
+        composeRule.onNodeWithText("Retry").performClick()
+
+        assertTrue(retryClicked)
     }
 }
