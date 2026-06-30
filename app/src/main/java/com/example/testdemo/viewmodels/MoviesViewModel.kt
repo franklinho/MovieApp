@@ -1,6 +1,5 @@
 package com.example.testdemo.viewmodels
 
-import android.util.Log
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -9,12 +8,10 @@ import com.example.testdemo.fragments.MainFragmentDirections
 import com.example.testdemo.models.Movie
 import com.example.testdemo.networking.MovieApi
 import com.example.testdemo.networking.MovieService
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 /** UI state for the trending/search movie list. */
 sealed interface MoviesUiState {
@@ -24,13 +21,9 @@ sealed interface MoviesUiState {
 }
 
 /**
- * Slice 1: clean ViewModel with a single observable [uiState].
- *
- * The [movieApi] parameter is a constructor seam (default-valued so the no-arg
- * `by viewModels()` factory still works via @JvmOverloads) — Slice 2 makes the API
- * `suspend` and adds the first unit test; Slice 3 swaps this for Hilt injection.
- * Pagination is intentionally dropped here (it was already non-functional) and
- * returns in Slice 5 via Paging 3 + RemoteMediator.
+ * Slice 2: networking is now `suspend` (Retrofit handles threading), so the body runs
+ * straight on `viewModelScope` — no manual `Dispatchers.IO`, fully unit-testable.
+ * The [movieApi] default-arg seam is replaced by Hilt injection in Slice 3.
  */
 class MoviesViewModel @JvmOverloads constructor(
     private val movieApi: MovieApi = MovieService().movieApi
@@ -52,20 +45,11 @@ class MoviesViewModel @JvmOverloads constructor(
     private fun loadMovies(query: String?) {
         _uiState.value = MoviesUiState.Loading
         viewModelScope.launch {
-            val tag = if (query == null) "MovieService/TrendingApi" else "MovieService/SearchAPI"
-            try {
-                val response = withContext(Dispatchers.IO) {
-                    val call = if (query == null) movieApi.trendingMovies(1) else movieApi.searchMovies(query, 1)
-                    call?.execute()
-                }
-                if (response != null && response.isSuccessful) {
-                    _uiState.value = MoviesUiState.Success(response.body()?.results ?: emptyList())
-                } else {
-                    _uiState.value = MoviesUiState.Error("Request unsuccessful")
-                }
+            _uiState.value = try {
+                val response = if (query == null) movieApi.trendingMovies(1) else movieApi.searchMovies(query, 1)
+                MoviesUiState.Success(response.results ?: emptyList())
             } catch (t: Throwable) {
-                Log.d(tag, t.localizedMessage ?: "Request failed")
-                _uiState.value = MoviesUiState.Error(t.localizedMessage ?: "Request failed")
+                MoviesUiState.Error(t.localizedMessage ?: "Request failed")
             }
         }
     }
