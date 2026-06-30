@@ -1,0 +1,39 @@
+name: Android
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - 8-polish
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Create local properties
+        run: |
+          echo "sdk.dir=$ANDROID_HOME" > local.properties
+          echo "TMDB_TOKEN=${TMDB_TOKEN:-}" >> local.properties
+
+      - name: Unit tests
+        run: ./gradlew :app:testDebugUnitTest
+
+      - name: Compile instrumentation tests
+        run: ./gradlew :app:compileDebugAndroidTestKotlin
+
+      - name: Build debug and release
+        run: ./gradlew :app:assembleDebug :app:assembleRelease
