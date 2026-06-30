@@ -34,4 +34,7 @@ class MovieRepository @Inject constructor(
         config = PagingConfig(pageSize = MovieRemoteMediator.PAGE_SIZE),
         pagingSourceFactory = { SearchPagingSource(movieApi, query) },
     ).flow
+
+    suspend fun movie(movieId: Int): MovieDto =
+        movieDao.findById(movieId)?.toDto() ?: movieApi.movieDetails(movieId)
 }
