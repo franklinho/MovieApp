@@ -4,75 +4,43 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.findNavController
+import androidx.paging.PagingData
+import androidx.paging.cachedIn
 import com.example.testdemo.data.MovieRepository
 import com.example.testdemo.fragments.MainFragmentDirections
 import com.example.testdemo.models.Movie
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Job
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.flatMapLatest
 import javax.inject.Inject
 
-/** UI state for the trending/search movie list. */
-sealed interface MoviesUiState {
-    data object Loading : MoviesUiState
-    data class Success(val movies: List<Movie>) : MoviesUiState
-    data class Error(val message: String) : MoviesUiState
-}
-
 /**
- * Slice 4: trending observes the Room cache (source of truth) while a background refresh
- * writes through; an error only surfaces if the cache can't satisfy the screen. Search is a
- * one-shot network call.
+ * Slice 5: exposes a single `Flow<PagingData<Movie>>` that switches between the trending
+ * (Room-backed, RemoteMediator) and search (network) pagers via [flatMapLatest] on the query.
+ * Paging's LoadState supersedes the old MoviesUiState.
  */
+@OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class MoviesViewModel @Inject constructor(
     private val repository: MovieRepository,
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow<MoviesUiState>(MoviesUiState.Loading)
-    val uiState: StateFlow<MoviesUiState> = _uiState.asStateFlow()
+    private val query = MutableStateFlow<String?>(null)
 
-    private var loadJob: Job? = null
-
-    init {
-        requestTrendingMovies()
-    }
+    val movies: Flow<PagingData<Movie>> = query
+        .flatMapLatest { q ->
+            if (q.isNullOrEmpty()) repository.trendingPager() else repository.searchPager(q)
+        }
+        .cachedIn(viewModelScope)
 
     fun requestTrendingMovies() {
-        loadJob?.cancel()
-        loadJob = viewModelScope.launch {
-            launch {
-                try {
-                    repository.refreshTrending()
-                } catch (t: Throwable) {
-                    if (_uiState.value !is MoviesUiState.Success) {
-                        _uiState.value = MoviesUiState.Error(t.localizedMessage ?: "Request failed")
-                    }
-                }
-            }
-            repository.trendingMovies().collect { movies ->
-                if (movies.isNotEmpty()) _uiState.value = MoviesUiState.Success(movies)
-            }
-        }
+        query.value = null
     }
 
     fun searchMovies(query: String?) {
-        if (query.isNullOrEmpty()) {
-            requestTrendingMovies()
-            return
-        }
-        loadJob?.cancel()
-        loadJob = viewModelScope.launch {
-            _uiState.value = MoviesUiState.Loading
-            _uiState.value = try {
-                MoviesUiState.Success(repository.searchMovies(query, 1))
-            } catch (t: Throwable) {
-                MoviesUiState.Error(t.localizedMessage ?: "Request failed")
-            }
-        }
+        this.query.value = query
     }
 
     fun launchMovieFragment(fragment: Fragment, movie: Movie) {

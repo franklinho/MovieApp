@@ -1,31 +1,37 @@
 package com.example.testdemo.data
 
-import com.example.testdemo.models.Movie
+import androidx.paging.ExperimentalPagingApi
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
+import androidx.paging.map
 import com.example.testdemo.networking.MovieApi
+import com.example.testdemo.networking.SearchPagingSource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import com.example.testdemo.models.Movie as MovieDto
 import javax.inject.Inject
 import javax.inject.Singleton
 
 /**
- * Slice 4: Room is the source of truth for trending display. [trendingMovies] streams the
- * cache; [refreshTrending] pulls from the network and writes through (the DAO Flow then
- * re-emits). Offline with a populated cache still shows movies. Search stays network-direct
- * for now (it becomes a separate paged source in Slice 5).
+ * Slice 5: trending is a Paging 3 stream backed by Room (via [MovieRemoteMediator]); search
+ * is a separate network-only paged stream. Both surface as `Flow<PagingData<MovieDto>>`.
  */
 @Singleton
 class MovieRepository @Inject constructor(
     private val movieApi: MovieApi,
+    private val database: AppDatabase,
     private val movieDao: MovieDao,
 ) {
-    fun trendingMovies(): Flow<List<Movie>> =
-        movieDao.observeAll().map { entities -> entities.map { it.toDto() } }
+    @OptIn(ExperimentalPagingApi::class)
+    fun trendingPager(): Flow<PagingData<MovieDto>> = Pager(
+        config = PagingConfig(pageSize = MovieRemoteMediator.PAGE_SIZE),
+        remoteMediator = MovieRemoteMediator(movieApi, database, movieDao),
+        pagingSourceFactory = { movieDao.pagingSource() },
+    ).flow.map { pagingData -> pagingData.map { it.toDto() } }
 
-    suspend fun refreshTrending() {
-        val fresh = movieApi.trendingMovies(1).results ?: emptyList()
-        movieDao.replaceAll(fresh.map { it.toEntity() })
-    }
-
-    suspend fun searchMovies(query: String, page: Int): List<Movie> =
-        movieApi.searchMovies(query, page).results ?: emptyList()
+    fun searchPager(query: String): Flow<PagingData<MovieDto>> = Pager(
+        config = PagingConfig(pageSize = MovieRemoteMediator.PAGE_SIZE),
+        pagingSourceFactory = { SearchPagingSource(movieApi, query) },
+    ).flow
 }

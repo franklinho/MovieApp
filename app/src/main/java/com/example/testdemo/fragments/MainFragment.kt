@@ -18,9 +18,9 @@ import com.example.testdemo.R
 import com.example.testdemo.adapters.MovieItemClickListener
 import com.example.testdemo.adapters.MovieRecyclerViewAdapter
 import com.example.testdemo.models.Movie
-import com.example.testdemo.viewmodels.MoviesUiState
 import com.example.testdemo.viewmodels.MoviesViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
@@ -52,12 +52,8 @@ class MainFragment : Fragment(), MovieItemClickListener {
 
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                moviesViewModel.uiState.collect { state ->
-                    when (state) {
-                        is MoviesUiState.Success -> movieAdapter.updateData(state.movies)
-                        is MoviesUiState.Error -> { /* TODO(Slice 8): surface error UI */ }
-                        MoviesUiState.Loading -> { /* TODO(Slice 8): surface loading UI */ }
-                    }
+                moviesViewModel.movies.collectLatest { pagingData ->
+                    movieAdapter.submitData(pagingData)
                 }
             }
         }
