@@ -6,7 +6,9 @@ import androidx.fragment.app.add
 import androidx.fragment.app.commit
 import com.example.testdemo.fragments.MainFragment
 import com.example.testdemo.R
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : FragmentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

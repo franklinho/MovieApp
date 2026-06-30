@@ -4,14 +4,15 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.findNavController
+import com.example.testdemo.data.MovieRepository
 import com.example.testdemo.fragments.MainFragmentDirections
 import com.example.testdemo.models.Movie
-import com.example.testdemo.networking.MovieApi
-import com.example.testdemo.networking.MovieService
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 /** UI state for the trending/search movie list. */
 sealed interface MoviesUiState {
@@ -21,12 +22,11 @@ sealed interface MoviesUiState {
 }
 
 /**
- * Slice 2: networking is now `suspend` (Retrofit handles threading), so the body runs
- * straight on `viewModelScope` — no manual `Dispatchers.IO`, fully unit-testable.
- * The [movieApi] default-arg seam is replaced by Hilt injection in Slice 3.
+ * Slice 3: Hilt-injected, talking to [MovieRepository] (no direct networking).
  */
-class MoviesViewModel @JvmOverloads constructor(
-    private val movieApi: MovieApi = MovieService().movieApi
+@HiltViewModel
+class MoviesViewModel @Inject constructor(
+    private val repository: MovieRepository,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<MoviesUiState>(MoviesUiState.Loading)
@@ -46,8 +46,8 @@ class MoviesViewModel @JvmOverloads constructor(
         _uiState.value = MoviesUiState.Loading
         viewModelScope.launch {
             _uiState.value = try {
-                val response = if (query == null) movieApi.trendingMovies(1) else movieApi.searchMovies(query, 1)
-                MoviesUiState.Success(response.results ?: emptyList())
+                val movies = if (query == null) repository.trendingMovies(1) else repository.searchMovies(query, 1)
+                MoviesUiState.Success(movies)
             } catch (t: Throwable) {
                 MoviesUiState.Error(t.localizedMessage ?: "Request failed")
             }

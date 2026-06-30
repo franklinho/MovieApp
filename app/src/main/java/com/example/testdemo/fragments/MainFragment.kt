@@ -20,8 +20,10 @@ import com.example.testdemo.adapters.MovieRecyclerViewAdapter
 import com.example.testdemo.models.Movie
 import com.example.testdemo.viewmodels.MoviesUiState
 import com.example.testdemo.viewmodels.MoviesViewModel
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
+@AndroidEntryPoint
 class MainFragment : Fragment(), MovieItemClickListener {
 
     private val moviesViewModel: MoviesViewModel by viewModels()
