@@ -18,111 +18,69 @@ import com.example.testdemo.recyclerview.InfiniteScrollListener
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.parceler.Parcels
 
+sealed interface MoviesUiState {
+    data object Loading : MoviesUiState
+    data class Success(val movies: List<Movie>) : MoviesUiState
+    data class Error(val message: String) : MoviesUiState
+}
 
-class MoviesViewModel(context: Context, gridLayoutManager: GridLayoutManager) : ViewModel(){
-    private val movieService: MovieService = MovieService()
-    private val movieApi: MovieApi = movieService.movieApi
-    private val moviesStateFlow: MutableStateFlow<List<Movie>> = MutableStateFlow(ArrayList())
-//    private val dbHelperImpl = DatabaseHelperImpl(DatabaseBuilder.getInstance(context))
-    private var isDataLoading = false
-    private var currentPageCount = 1
-    val infiniteScrollListener = object: InfiniteScrollListener(gridLayoutManager) {
-        override fun onLoadMore() {
-            currentPageCount++
-            requestMoviesFromServer(null, currentPageCount)
-        }
+class MoviesViewModel @JvmOverloads constructor(private val movieApi: MovieApi = MovieService().movieApi) :
+    ViewModel() {
+    private val _uiState = MutableStateFlow<MoviesUiState>(MoviesUiState.Loading)
+    val uiState: StateFlow<MoviesUiState> = _uiState.asStateFlow()
 
-        override fun isDataLoading(): Boolean {
-            return isDataLoading
-        }
-
+    init {
+        requestTrendingMovies()
     }
 
     fun requestTrendingMovies() {
-        currentPageCount = 1
-        //TODO: Cache trending movies for 24 hours
-//        viewModelScope.launch {
-//            dbHelperImpl
-//                .getMovies()
-//                .flowOn(Dispatchers.IO)
-//                .catch {
-//                    Log.d( "MovieService/TrendingApi", "Unable to get movies from DB")
-//                    requestMoviesFromServer(null)
-//                }.collect {
-//                    if (it.isEmpty()) {
-//                        Log.d( "MovieService/TrendingApi", "No movies in DB")
-//                        requestMoviesFromServer(null)
-//                    } else {
-//                        Log.d( "MovieService/TrendingApi", "Successfully grabbed movies from DB")
-//                        updateMovies(it.map { movie -> Movie.fromObject(movie) })
-//                    }
-//                }
-//            }
-        requestMoviesFromServer(null, currentPageCount)
-    }
-
-    private fun updateMovies(movieList : List<Movie>) {
-        CoroutineScope(Dispatchers.Main).launch {
-            val currentMovies = moviesStateFlow.value
-            moviesStateFlow.value =  currentMovies + movieList
-        }
-        isDataLoading = false
+        loadMovies(query = null)
     }
 
     fun searchMovies(query: String?) {
-        requestMoviesFromServer(query, 1)
+        if (query.isNullOrEmpty()) requestTrendingMovies() else loadMovies(query)
     }
 
-    private fun requestMoviesFromServer(query : String ?, page: Int) {
-        isDataLoading = true
-        CoroutineScope(Dispatchers.IO).launch {
-            val call = if (query == null) movieApi.trendingMovies(currentPageCount) else movieApi.searchMovies(query, page)
+    private fun loadMovies(query: String?) {
+        _uiState.value = MoviesUiState.Loading
+        viewModelScope.launch {
             val tag = if (query == null) "MovieService/TrendingApi" else "MovieService/SearchAPI"
 
             try {
-                val response = call?.execute()
-
-                if (response == null || !response.isSuccessful) {
-                    //unsuccessful
-                    Log.d( tag, "Response Unsuccessful")
+                val response = withContext(Dispatchers.IO) {
+                    val call = if (query == null) movieApi.trendingMovies(1) else movieApi.searchMovies(query, 1)
+                    call?.execute()
                 }
-
-                //successful
-                val movieList: List<Movie>? = response?.body()?.results
-                if (movieList != null) {
-//                    if (query == null) {
-//                        viewModelScope.launch { dbHelperImpl.deleteAll().flowOn(Dispatchers.IO).collect {
-//                            dbHelperImpl.insertAll(movieList.map { com.example.testdemo.data.Movie.fromObject(it) }).flowOn(Dispatchers.IO).collect {
-//                                Log.d(tag, "Inserted movie into DB")
-//                                updateMovies(movieList)
-//                            }
-//                        } }
-//                    } else {
-                        updateMovies(movieList)
-//                    }
+                if (response != null && response.isSuccessful) {
+                    //success
+                    _uiState.value = MoviesUiState.Success(response.body()?.results ?: emptyList())
+                } else {
+                    //unsuccessful
+                    _uiState.value = MoviesUiState.Error("Request unsuccessful")
                 }
             } catch (t: Throwable) {
                 //failed
-                Log.d(tag, t.localizedMessage)
+                Log.d(tag, t.localizedMessage ?: "Request failed")
+                _uiState.value = MoviesUiState.Error(t.localizedMessage ?: "Request failed")
             }
         }
     }
 
-    fun getMoviesStateFlow(): MutableStateFlow<List<Movie>> {
-        return moviesStateFlow
-    }
-
-    fun hasMovies(): Boolean { return moviesStateFlow.value.isNotEmpty()}
-
     fun launchMovieFragment(fragment: Fragment, movie: Movie) {
         //TODO: Add shared element transition
-        val action = MainFragmentDirections.actionMainFragmentToItemFragment(movie.title, movie.backdropPath, movie.overview)
+        val action = MainFragmentDirections.actionMainFragmentToItemFragment()
+            .setMovieTitle(movie.title)
+            .setMoviePoster(movie.backdropPath)
+            .setMovieOverview(movie.overview)
         fragment.requireView().findNavController().navigate(action)
     }
 

@@ -6,7 +6,7 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import kotlinx.coroutines.flow.Flow
 
-@Database(entities = [Movie::class], version = 1)
+@Database(entities = [Movie::class], version = 1, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun movieDao() : MovieDao
 }
@@ -36,6 +36,6 @@ object DatabaseBuilder {
 interface DatabaseHelper {
     fun getMovies(): Flow<List<Movie>>
     fun getMovie(id : String): Flow<Movie>
-    fun insertAll(users: List<Movie>): Flow<Unit>
+    fun insertAll(movies: List<Movie>): Flow<Unit>
     fun deleteAll() : Flow<Unit>
 }

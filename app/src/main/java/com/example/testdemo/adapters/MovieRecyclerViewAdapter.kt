@@ -67,7 +67,7 @@ private class DiffCallback : DiffUtil.ItemCallback<Movie>() {
     }
 
     override fun areItemsTheSame(oldItem: Movie, newItem: Movie): Boolean {
-        return oldItem.id === newItem.id
+        return oldItem.id == newItem.id
     }
 }
 
@@ -78,7 +78,7 @@ class MovieAdapterViewHolder(parentView : View) : RecyclerView.ViewHolder(parent
 
     init {
         view = parentView
-        ivMoviePoster = itemView.requireViewById(R.id.ivMoviePoster) as ImageView
-        tvMovieTitle = itemView.requireViewById(R.id.tvMovieTitle) as TextView
+        ivMoviePoster = itemView.findViewById(R.id.ivMoviePoster) as ImageView
+        tvMovieTitle = itemView.findViewById(R.id.tvMovieTitle) as TextView
     }
 }

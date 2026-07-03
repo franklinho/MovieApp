@@ -1,7 +1,6 @@
 package com.example.testdemo.fragments
 
 import android.os.Bundle
-import android.os.Parcelable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,21 +8,19 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.navArgs
 import com.bumptech.glide.Glide
 import com.example.testdemo.databinding.FragmentItemBinding
-import com.example.testdemo.models.Movie
 import com.example.testdemo.networking.MovieService
-import org.parceler.Parcels
 
 class ItemFragment : Fragment() {
-    private val args : ItemFragmentArgs by navArgs()
+    private val args: ItemFragmentArgs by navArgs()
     private lateinit var binding: FragmentItemBinding
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         // Inflate the layout for this fragment
-        binding = FragmentItemBinding.inflate(layoutInflater, container, false)
-        return binding?.root
+        binding = FragmentItemBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -33,10 +30,10 @@ class ItemFragment : Fragment() {
         val tvTitle = binding.tvTitle
         val tvOverview = binding.tvOverview
 
-        args.moviePoster?.let {
+        args.moviePoster?.let { poster ->
             Glide
                 .with(this)
-                .load(MovieService.getFullImageUrl(args.moviePoster!!))
+                .load(MovieService.getFullImageUrl(poster))
                 .into(ivMoviePoster)
         }
 

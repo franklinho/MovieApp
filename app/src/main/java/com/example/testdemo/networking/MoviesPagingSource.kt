@@ -1,10 +1,10 @@
 package com.example.testdemo.networking
 
-import android.net.http.HttpException
 import android.util.Log
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.example.testdemo.models.Movie
+import retrofit2.HttpException
 import java.io.IOException
 
 private const val STARTING_PAGE_INDEX = 1
