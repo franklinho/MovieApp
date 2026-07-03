@@ -4,14 +4,17 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.findNavController
+import com.example.testdemo.data.MovieRepository
 import com.example.testdemo.fragments.MainFragmentDirections
 import com.example.testdemo.models.Movie
 import com.example.testdemo.networking.MovieApi
 import com.example.testdemo.networking.MovieService
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 sealed interface MoviesUiState {
     data object Loading : MoviesUiState
@@ -19,7 +22,8 @@ sealed interface MoviesUiState {
     data class Error(val message: String) : MoviesUiState
 }
 
-class MoviesViewModel @JvmOverloads constructor(private val movieApi: MovieApi = MovieService().movieApi) :
+@HiltViewModel
+class MoviesViewModel @Inject constructor(private val repository: MovieRepository) :
     ViewModel() {
     private val _uiState = MutableStateFlow<MoviesUiState>(MoviesUiState.Loading)
     val uiState: StateFlow<MoviesUiState> = _uiState.asStateFlow()
@@ -40,8 +44,8 @@ class MoviesViewModel @JvmOverloads constructor(private val movieApi: MovieApi =
         _uiState.value = MoviesUiState.Loading
         viewModelScope.launch {
             _uiState.value = try {
-                val response = if (query == null) movieApi.trendingMovies(1) else movieApi.searchMovies(query, 1)
-                MoviesUiState.Success(response.results ?: emptyList())
+                val movies = if (query == null) repository.trendingMovies(1) else repository.searchMovies(query, 1)
+                MoviesUiState.Success(movies)
             } catch (t: Throwable) {
                 MoviesUiState.Error(t.localizedMessage ?: "Request failed")
             }
