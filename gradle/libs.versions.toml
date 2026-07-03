@@ -1,7 +1,7 @@
 [versions]
-agp = "8.9.1"
-kotlin = "2.0.21"
-ksp = "2.0.21-1.0.28"
+agp = "9.2.1"
+kotlin = "2.2.21"
+ksp = "2.3.9"
 coreKtx = "1.8.0"
 lifecycleRuntimeKtx = "2.8.7"
 lifecycleViewmodelCompose = "2.6.1"
@@ -10,10 +10,11 @@ retrofit = "2.11.0"
 okhttp = "4.12.0"
 serializationJson = "1.7.3"
 coroutines = "1.9.0"
-hilt = "2.52"
+hilt = "2.60"
 hiltNavigationCompose = "1.2.0"
 coil = "3.0.4"
 activityCompose = "1.9.3"
+coreSplashscreen = "1.0.1"
 composeBom = "2024.09.00"
 paging = "3.2.0"
 room = "2.7.0"
@@ -39,6 +40,7 @@ coil-compose = { group = "io.coil-kt.coil3", name = "coil-compose", version.ref 
 coil-network-okhttp = { group = "io.coil-kt.coil3", name = "coil-network-okhttp", version.ref = "coil" }
 androidx-paging-compose = { group = "androidx.paging", name = "paging-compose", version.ref = "paging" }
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityCompose" }
+androidx-core-splashscreen = { group = "androidx.core", name = "core-splashscreen", version.ref = "coreSplashscreen" }
 androidx-paging-runtime = { group = "androidx.paging", name = "paging-runtime", version.ref = "paging" }
 androidx-paging-common-ktx = { group = "androidx.paging", name = "paging-common-ktx", version.ref = "paging" }
 androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
@@ -64,7 +66,6 @@ mockk = { group = "io.mockk", name = "mockk", version.ref = "mockk" }
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 android-library = { id = "com.android.library", version.ref = "agp" }
-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
