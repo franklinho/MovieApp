@@ -1,7 +1,7 @@
 [versions]
 agp = "9.2.1"
 kotlin = "2.2.10"
-ksp = "2.2.10-2.0.2"
+ksp = "2.3.9"
 coreKtx = "1.8.0"
 lifecycleRuntimeKtx = "2.8.7"
 lifecycleViewmodelCompose = "2.6.1"
@@ -10,7 +10,7 @@ retrofit = "2.11.0"
 okhttp = "4.12.0"
 serializationJson = "1.7.3"
 coroutines = "1.9.0"
-hilt = "2.52"
+hilt = "2.60"
 hiltNavigationCompose = "1.2.0"
 coil = "3.0.4"
 activityCompose = "1.9.3"
@@ -66,7 +66,6 @@ mockk = { group = "io.mockk", name = "mockk", version.ref = "mockk" }
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 android-library = { id = "com.android.library", version.ref = "agp" }
-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
