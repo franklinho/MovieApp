@@ -57,6 +57,7 @@ android {
 dependencies {
     implementation libs.androidx.paging.common.ktx
     implementation libs.androidx.paging.runtime
+    implementation libs.androidx.paging.compose
     implementation libs.androidx.core.ktx
     implementation libs.androidx.lifecycle.runtime.ktx
     implementation libs.androidx.compose.ui
@@ -74,6 +75,8 @@ dependencies {
     implementation libs.retrofit.converter.kotlinx.serialization
     implementation libs.parceler
     implementation libs.glide
+    implementation libs.coil.compose
+    implementation libs.coil.network.okhttp
     implementation libs.androidx.activity.compose
     testImplementation libs.junit
     testImplementation libs.kotlinx.coroutines.test

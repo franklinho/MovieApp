@@ -1,6 +1,6 @@
 [versions]
 agp = "9.2.1"
-kotlin = "2.2.21"
+kotlin = "2.4.0"
 ksp = "2.3.9"
 coreKtx = "1.8.0"
 lifecycleRuntimeKtx = "2.8.7"
@@ -14,6 +14,7 @@ retrofit = "2.9.0"
 parceler = "1.1.13"
 glide = "4.16.0"
 glideCompose = "1.0.0-alpha.5"
+coil = "3.5.0"
 activityCompose = "1.9.3"
 composeBom = "2024.09.00"
 paging = "3.2.0"
@@ -42,9 +43,12 @@ retrofit-converter-kotlinx-serialization = { group = "com.jakewharton.retrofit",
 parceler = { group = "org.parceler", name = "parceler", version.ref = "parceler" }
 glide = { group = "com.github.bumptech.glide", name = "glide", version.ref = "glide" }
 glide-compose = { group = "com.github.bumptech.glide", name = "compose", version.ref = "glideCompose" }
+coil-compose = { group = "io.coil-kt.coil3", name = "coil-compose", version.ref = "coil" }
+coil-network-okhttp = { group = "io.coil-kt.coil3", name = "coil-network-okhttp", version.ref = "coil" }
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityCompose" }
 androidx-paging-runtime = { group = "androidx.paging", name = "paging-runtime", version.ref = "paging" }
 androidx-paging-common-ktx = { group = "androidx.paging", name = "paging-common-ktx", version.ref = "paging" }
+androidx-paging-compose = { group = "androidx.paging", name = "paging-compose", version.ref = "paging" }
 androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
 androidx-compose-ui = { group = "androidx.compose.ui", name = "ui" }
 androidx-compose-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
