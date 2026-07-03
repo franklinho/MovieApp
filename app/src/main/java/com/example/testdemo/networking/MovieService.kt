@@ -1,20 +1,23 @@
 package com.example.testdemo.networking
 
 import com.example.testdemo.BuildConfig
+import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
+import kotlinx.serialization.json.Json
+import okhttp3.MediaType
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 
 
 class MovieService {
+    private val json = Json { ignoreUnknownKeys = true }
     private val retrofit = Retrofit.Builder()
         .baseUrl("https://api.themoviedb.org/")
-        .addConverterFactory(GsonConverterFactory.create())
+        .addConverterFactory(json.asConverterFactory(MediaType.get("application/json")))
         .client(okHttpClient)
         .build()
     val movieApi: MovieApi = retrofit.create(MovieApi::class.java)
     private val okHttpClient: OkHttpClient
-        private get() {
+        get() {
             val builder = OkHttpClient.Builder()
             builder.addInterceptor { chain ->
                 val request = chain.request().newBuilder()
@@ -27,8 +30,6 @@ class MovieService {
 
     companion object {
         private const val BASE_IMAGE_URL = "https://image.tmdb.org/t/p/original"
-        fun getFullImageUrl(path: String): String {
-            return BASE_IMAGE_URL + path
-        }
+        fun getFullImageUrl(path: String): String = BASE_IMAGE_URL + path
     }
 }

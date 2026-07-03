@@ -3,25 +3,23 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    tools:context=".fragments.MainFragment"
     android:background="@color/white"
-    >
+    android:orientation="vertical"
+    tools:context=".fragments.MainFragment">
 
     <EditText
         android:id="@+id/etSearch"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:inputType="text"
-        android:singleLine="true"
+        android:autofillHints="none"
+        android:hint="@string/search_hint"
         android:imeOptions="actionDone"
-        android:hint="Search"
-        />
+        android:inputType="text"
+        android:singleLine="true" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvRecycler"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        />
+        android:layout_height="wrap_content" />
 
 </LinearLayout>

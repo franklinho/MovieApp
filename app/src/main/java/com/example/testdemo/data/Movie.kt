@@ -16,7 +16,7 @@ data class Movie(
 ) {
     companion object {
         fun fromObject(movie : Movie) : com.example.testdemo.data.Movie {
-            return com.example.testdemo.data.Movie(movie.id, movie.title, movie.overview, movie.isAdult, movie.posterPath, movie.backdropPath)
+            return com.example.testdemo.data.Movie(movie.id, movie.title, movie.overview, movie.isAdult, movie.posterPath, movie.backDropPath)
         }
     }
 }
