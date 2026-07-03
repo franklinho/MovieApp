@@ -1,7 +1,13 @@
 package com.example.testdemo.data
 
+import androidx.paging.ExperimentalPagingApi
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
+import androidx.paging.map
 import com.example.testdemo.models.Movie
 import com.example.testdemo.networking.MovieApi
+import com.example.testdemo.networking.SearchPagingSource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
@@ -10,16 +16,18 @@ import javax.inject.Singleton
 @Singleton
 class MovieRepository @Inject constructor(
     private val movieApi: MovieApi,
+    private val database: AppDatabase,
     private val movieDao: MovieDao,
 ) {
-    fun trendingMovies(): Flow<List<Movie>> =
-        movieDao.observeAll().map { entities -> entities.map { it.toModel() } }
+    @OptIn(ExperimentalPagingApi::class)
+    fun trendingPager(): Flow<PagingData<Movie>> = Pager(
+        config = PagingConfig(pageSize = MovieRemoteMediator.PAGE_SIZE),
+        remoteMediator = MovieRemoteMediator(movieApi, database, movieDao),
+        pagingSourceFactory = { movieDao.pagingSource() },
+    ).flow.map { pagingData -> pagingData.map { it.toModel() } }
 
-    suspend fun refreshTrending() {
-        val fresh = movieApi.trendingMovies(1).results ?: emptyList()
-        movieDao.replaceAll(fresh.map { it.toEntity() })
-    }
-
-    suspend fun searchMovies(query: String, page: Int): List<Movie> =
-        movieApi.searchMovies(query, page).results ?: emptyList()
+    fun searchPager(query: String): Flow<PagingData<Movie>> = Pager(
+        config = PagingConfig(pageSize = MovieRemoteMediator.PAGE_SIZE),
+        pagingSourceFactory = { SearchPagingSource(movieApi, query) },
+    ).flow
 }

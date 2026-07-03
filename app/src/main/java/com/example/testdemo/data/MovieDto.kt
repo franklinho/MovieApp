@@ -11,5 +11,6 @@ data class MovieDto(
     @ColumnInfo(name = "overview") val overview: String?,
     @ColumnInfo(name = "adult") val isAdult: Boolean,
     @ColumnInfo(name = "poster_path") val posterPath: String?,
-    @ColumnInfo(name = "backdrop_path") val backdropPath: String?
+    @ColumnInfo(name = "backdrop_path") val backdropPath: String?,
+    @ColumnInfo(name = "order_index") val orderIndex: Int,
 )
