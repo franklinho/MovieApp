@@ -1,6 +1,7 @@
 package com.example.testdemo.viewmodels
 
 import app.cash.turbine.test
+import com.example.testdemo.data.MovieRepository
 import com.example.testdemo.models.Movie
 import com.example.testdemo.models.MoviesResponse
 import com.example.testdemo.networking.MovieApi
@@ -27,11 +28,11 @@ class MoviesViewModelTest {
     @Test
     fun `emits Loading then Success when api returns movies`() = runTest {
         Dispatchers.setMain(StandardTestDispatcher(testScheduler))
-        val api = mockk<MovieApi>()
+        val repository = mockk<MovieRepository>()
         val movies = listOf(Movie(id = 1, title = "Inception"))
-        coEvery { api.trendingMovies(1) } returns MoviesResponse(results = movies)
+        coEvery { repository.trendingMovies(1) } returns movies
 
-        val vm = MoviesViewModel(api)
+        val vm = MoviesViewModel(repository)
 
         vm.uiState.test {
             assertEquals(MoviesUiState.Loading, awaitItem())
@@ -42,12 +43,12 @@ class MoviesViewModelTest {
     }
 
     @Test
-    fun `emits Error when api throws`() = runTest {
+    fun `emits Error when repository throws`() = runTest {
         Dispatchers.setMain(StandardTestDispatcher(testScheduler))
-        val api = mockk<MovieApi>()
-        coEvery { api.trendingMovies(1) } throws RuntimeException("boom")
+        val repository = mockk<MovieRepository>()
+        coEvery { repository.trendingMovies(1) } throws RuntimeException("boom")
 
-        val vm = MoviesViewModel(api)
+        val vm = MoviesViewModel(repository)
 
         vm.uiState.test {
             assertEquals(MoviesUiState.Loading, awaitItem())
