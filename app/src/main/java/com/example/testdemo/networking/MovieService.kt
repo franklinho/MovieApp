@@ -3,7 +3,7 @@ package com.example.testdemo.networking
 import com.example.testdemo.BuildConfig
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import kotlinx.serialization.json.Json
-import okhttp3.MediaType
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 
@@ -12,7 +12,7 @@ class MovieService {
     private val json = Json { ignoreUnknownKeys = true }
     private val retrofit = Retrofit.Builder()
         .baseUrl("https://api.themoviedb.org/")
-        .addConverterFactory(json.asConverterFactory(MediaType.get("application/json")))
+        .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
         .client(okHttpClient)
         .build()
     val movieApi: MovieApi = retrofit.create(MovieApi::class.java)
