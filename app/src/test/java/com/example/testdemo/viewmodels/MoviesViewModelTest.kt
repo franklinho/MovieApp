@@ -3,12 +3,13 @@ package com.example.testdemo.viewmodels
 import app.cash.turbine.test
 import com.example.testdemo.data.MovieRepository
 import com.example.testdemo.models.Movie
-import com.example.testdemo.models.MoviesResponse
-import com.example.testdemo.networking.MovieApi
 import io.mockk.coEvery
+import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
@@ -26,11 +27,12 @@ class MoviesViewModelTest {
     fun tearDown() = Dispatchers.resetMain()
 
     @Test
-    fun `emits Loading then Success when api returns movies`() = runTest {
+    fun `emits Success from cached trending movies`() = runTest {
         Dispatchers.setMain(StandardTestDispatcher(testScheduler))
-        val repository = mockk<MovieRepository>()
+        val repository = mockk<MovieRepository>(relaxed = true)
         val movies = listOf(Movie(id = 1, title = "Inception"))
-        coEvery { repository.trendingMovies(1) } returns movies
+        every { repository.trendingMovies() } returns flowOf(movies)
+        coEvery { repository.refreshTrending() } returns Unit
 
         val vm = MoviesViewModel(repository)
 
@@ -43,10 +45,11 @@ class MoviesViewModelTest {
     }
 
     @Test
-    fun `emits Error when repository throws`() = runTest {
+    fun `emits Error when cache is empty and refresh fails`() = runTest {
         Dispatchers.setMain(StandardTestDispatcher(testScheduler))
-        val repository = mockk<MovieRepository>()
-        coEvery { repository.trendingMovies(1) } throws RuntimeException("boom")
+        val repository = mockk<MovieRepository>(relaxed = true)
+        every { repository.trendingMovies() } returns flowOf(emptyList())
+        coEvery { repository.refreshTrending() } throws RuntimeException("boom")
 
         val vm = MoviesViewModel(repository)
 

@@ -57,7 +57,7 @@ class MovieRecyclerViewAdapter(listener: MovieItemClickListener) : RecyclerView.
 }
 
 interface MovieItemClickListener {
-    fun onMovieItemClicked(movie : Movie)
+    fun onMovieItemClicked(movie: Movie)
 }
 
 //TODO: Add pagination

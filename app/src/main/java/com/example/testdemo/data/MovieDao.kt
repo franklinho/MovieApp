@@ -1,24 +1,26 @@
 package com.example.testdemo.data
 
 import androidx.room.Dao
-import androidx.room.Delete
 import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Transaction
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface MovieDao {
-    @Query("SELECT * FROM movie")
-    fun getAll(): List<Movie>
+    @Query("SELECT * FROM MovieDto")
+    fun observeAll(): Flow<List<MovieDto>>
 
-    @Query("SELECT * FROM movie WHERE id = :id LIMIT 1")
-    fun getMovie(id: String) : Movie
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAll(movies: List<MovieDto>)
 
-    @Insert
-    fun insertAll(movies: List<Movie>)
+    @Query("DELETE FROM MovieDto")
+    suspend fun deleteAll()
 
-    @Delete
-    fun delete(movie: Movie)
-
-    @Query("DELETE FROM movie")
-    fun deleteAll()
+    @Transaction
+    suspend fun replaceAll(movies: List<MovieDto>) {
+        deleteAll()
+        insertAll(movies)
+    }
 }
