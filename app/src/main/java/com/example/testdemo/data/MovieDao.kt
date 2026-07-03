@@ -1,24 +1,23 @@
 package com.example.testdemo.data
 
+import androidx.paging.PagingSource
 import androidx.room.Dao
-import androidx.room.Delete
 import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
 
 @Dao
 interface MovieDao {
-    @Query("SELECT * FROM movie")
-    fun getAll(): List<Movie>
 
-    @Query("SELECT * FROM movie WHERE id = :id LIMIT 1")
-    fun getMovie(id: String) : Movie
+    @Query("SELECT * FROM Movie ORDER BY order_index ASC")
+    fun pagingSource(): PagingSource<Int, Movie>
 
-    @Insert
-    fun insertAll(movies: List<Movie>)
+    @Query("SELECT COUNT(*) FROM Movie")
+    suspend fun count(): Int
 
-    @Delete
-    fun delete(movie: Movie)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAll(movies: List<Movie>)
 
-    @Query("DELETE FROM movie")
-    fun deleteAll()
+    @Query("DELETE FROM Movie")
+    suspend fun clearAll()
 }

@@ -1,9 +1,11 @@
 package com.example.testdemo.models
 
-import com.example.testdemo.models.Movie
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
-
-class MoviesResponse {
-    val page = 0
-    val results: List<Movie>? = null
-}
+@Serializable
+data class MoviesResponse(
+    val page: Int = 0,
+    @SerialName("total_pages") val totalPages: Int = 0,
+    val results: List<Movie>? = null,
+)

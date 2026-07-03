@@ -1,22 +1,15 @@
 package com.example.testdemo.models
 
-import com.example.testdemo.data.Movie
-import com.google.gson.annotations.SerializedName
-import org.parceler.Parcel
-class Movie(id : Int, title: String?, overview: String?, isAdult: Boolean, posterPath : String?, backDropPath: String?) {
-    val id = 0
-    val title: String? = null
-    val overview: String? = null
-    @SerializedName("adult")
-    val isAdult = false
-    @SerializedName("poster_path")
-    val posterPath: String? = null
-    @SerializedName("backdrop_path")
-    val backdropPath: String? = null
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
-    companion object {
-        fun fromObject(movie : Movie) : com.example.testdemo.models.Movie {
-            return com.example.testdemo.models.Movie(movie.id, movie.title, movie.overview, movie.isAdult, movie.posterPath, movie.backdropPath)
-        }
-    }
-}
+/** TMDB movie network DTO. (Room entity lives in `data/Movie` and is mapped separately.) */
+@Serializable
+data class Movie(
+    val id: Int = 0,
+    val title: String? = null,
+    val overview: String? = null,
+    @SerialName("adult") val isAdult: Boolean = false,
+    @SerialName("poster_path") val posterPath: String? = null,
+    @SerialName("backdrop_path") val backdropPath: String? = null,
+)

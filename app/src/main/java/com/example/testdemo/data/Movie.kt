@@ -3,8 +3,11 @@ package com.example.testdemo.data
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.example.testdemo.models.Movie
 
+/**
+ * Room cache entity. [orderIndex] preserves the trending rank order across paged inserts
+ * (Room's PagingSource needs a stable ORDER BY). Mapped to/from the DTO in MovieMappers.kt.
+ */
 @Entity
 data class Movie(
     @PrimaryKey val id: Int,
@@ -12,11 +15,6 @@ data class Movie(
     @ColumnInfo(name = "overview") val overview: String?,
     @ColumnInfo(name = "adult") val isAdult: Boolean,
     @ColumnInfo(name = "poster_path") val posterPath: String?,
-    @ColumnInfo(name = "backdrop_path") val backdropPath: String?
-) {
-    companion object {
-        fun fromObject(movie : Movie) : com.example.testdemo.data.Movie {
-            return com.example.testdemo.data.Movie(movie.id, movie.title, movie.overview, movie.isAdult, movie.posterPath, movie.backdropPath)
-        }
-    }
-}
+    @ColumnInfo(name = "backdrop_path") val backdropPath: String?,
+    @ColumnInfo(name = "order_index") val orderIndex: Int,
+)
