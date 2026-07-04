@@ -38,7 +38,7 @@ class MovieRemoteMediator(
             database.withTransaction {
                 if (loadType == LoadType.REFRESH) movieDao.clearAll()
                 val start = movieDao.count()
-                movieDao.insertAll(movies.mapIndexed { i, dto -> dto.toEntity(orderIndex = start + i) })
+                movieDao.insertAll(movies.mapIndexed { i, dto -> dto.toDto(orderIndex = start + i) })
             }
 
             MediatorResult.Success(endOfPaginationReached = endReached)

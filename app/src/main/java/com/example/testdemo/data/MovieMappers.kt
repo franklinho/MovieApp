@@ -2,7 +2,7 @@ package com.example.testdemo.data
 
 import com.example.testdemo.models.Movie
 
-fun Movie.toEntity(orderIndex: Int): MovieDto = MovieDto(
+fun Movie.toDto(orderIndex: Int): MovieDto = MovieDto(
     id = id,
     title = title,
     overview = overview,

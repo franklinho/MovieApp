@@ -17,7 +17,7 @@ class MovieMappersTest {
             backdropPath = "/backdrop.jpg",
         )
 
-        val entity = movie.toEntity(orderIndex = 7)
+        val entity = movie.toDto(orderIndex = 7)
 
         assertEquals(1, entity.id)
         assertEquals("Inception", entity.title)
@@ -36,6 +36,6 @@ class MovieMappersTest {
             backdropPath = "/b.jpg",
         )
 
-        assertEquals(movie, movie.toEntity(orderIndex = 0).toModel())
+        assertEquals(movie, movie.toDto(orderIndex = 0).toModel())
     }
 }

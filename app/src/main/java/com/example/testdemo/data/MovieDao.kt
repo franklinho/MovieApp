@@ -15,6 +15,9 @@ interface MovieDao {
     @Query("SELECT COUNT(*) FROM Movie")
     suspend fun count(): Int
 
+    @Query("SELECT * FROM Movie WHERE id = :id LIMIT 1")
+    suspend fun findById(id: Int): MovieDto?
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(movies: List<MovieDto>)
 
