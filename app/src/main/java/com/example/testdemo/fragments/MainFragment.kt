@@ -6,7 +6,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
-import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -40,11 +39,11 @@ class MainFragment : Fragment() {
     private fun openMovieDetail(movie: Movie) {
         findNavController().navigate(
             R.id.action_mainFragment_to_itemFragment,
-            bundleOf(
-                ARG_MOVIE_TITLE to movie.title,
-                ARG_MOVIE_POSTER to movie.backdropPath,
-                ARG_MOVIE_OVERVIEW to movie.overview,
-            ),
+            Bundle().apply {
+                putString(ARG_MOVIE_TITLE, movie.title)
+                putString(ARG_MOVIE_POSTER, movie.backdropPath)
+                putString(ARG_MOVIE_OVERVIEW, movie.overview)
+            },
         )
     }
 
