@@ -28,14 +28,8 @@ class MovieDetailViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val route = savedStateHandle.toRoute<MovieDetailRoute>()
-    private val fallbackMovie = route.toFallbackMovie()
 
-    private val _uiState = MutableStateFlow(
-        MovieDetailUiState(
-            movie = fallbackMovie,
-            isLoading = fallbackMovie == null,
-        ),
-    )
+    private val _uiState = MutableStateFlow(MovieDetailUiState())
     val uiState: StateFlow<MovieDetailUiState> = _uiState.asStateFlow()
 
     init {
@@ -43,11 +37,10 @@ class MovieDetailViewModel @Inject constructor(
             runCatching {
                 repository.movie(route.movieId)
             }.onSuccess { movie ->
-                val resolvedMovie = movie ?: fallbackMovie
                 _uiState.value = MovieDetailUiState(
-                    movie = resolvedMovie,
+                    movie = movie,
                     isLoading = false,
-                    errorMessage = if (resolvedMovie == null) "Movie not found" else null,
+                    errorMessage = if (movie == null) "Movie not found" else null,
                 )
             }.onFailure { error ->
                 _uiState.update {
@@ -63,16 +56,4 @@ class MovieDetailViewModel @Inject constructor(
             }
         }
     }
-
-    private fun MovieDetailRoute.toFallbackMovie(): Movie? =
-        if (title == null && backdropPath == null && overview == null) {
-            null
-        } else {
-            Movie(
-                id = movieId,
-                title = title,
-                backdropPath = backdropPath,
-                overview = overview,
-            )
-        }
 }
