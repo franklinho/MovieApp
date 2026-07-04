@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.ksp)
+    alias(libs.plugins.hilt)
 }
 
 def localProperties = new Properties()
@@ -53,6 +54,7 @@ android {
 
 dependencies {
     implementation libs.androidx.navigation.compose
+    implementation libs.androidx.hilt.navigation.compose
     implementation libs.androidx.paging.common.ktx
     implementation libs.androidx.paging.runtime
     implementation libs.androidx.paging.compose
@@ -90,4 +92,6 @@ dependencies {
     implementation libs.androidx.room.ktx
     implementation libs.androidx.room.paging
 
+    implementation libs.hilt.android
+    ksp libs.hilt.compiler
 }

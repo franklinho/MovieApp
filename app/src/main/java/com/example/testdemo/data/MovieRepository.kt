@@ -10,12 +10,15 @@ import com.example.testdemo.networking.MovieApi
 import com.example.testdemo.networking.SearchPagingSource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import javax.inject.Inject
+import javax.inject.Singleton
 
 /**
  * Slice 5: trending is a Paging 3 stream backed by Room (via [MovieRemoteMediator]); search
  * is a separate network-only paged stream. Both surface as `Flow<PagingData<Movie>>`.
  */
-class MovieRepository(
+@Singleton
+class MovieRepository @Inject constructor(
     private val movieApi: MovieApi,
     private val database: AppDatabase,
     private val movieDao: MovieDao,

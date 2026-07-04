@@ -1,13 +1,12 @@
 package com.example.testdemo.ui
 
 import androidx.compose.runtime.Composable
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
-import com.example.testdemo.data.MovieRepository
 import com.example.testdemo.viewmodels.MoviesViewModel
 import kotlinx.serialization.Serializable
 
@@ -22,17 +21,14 @@ data class MovieDetailRoute(
 )
 
 @Composable
-fun MovieAppNavHost(
-    movieRepository: MovieRepository,
-    navController: NavHostController = rememberNavController(),
-) {
+fun MovieAppNavHost(navController: NavHostController = rememberNavController()) {
     NavHost(
         navController = navController,
         startDestination = MovieListRoute,
     ) {
         composable<MovieListRoute> {
             MovieListScreen(
-                viewModel = viewModel(factory = MoviesViewModel.Factory(movieRepository)),
+                viewModel = hiltViewModel<MoviesViewModel>(),
                 onMovieClick = { movie ->
                     navController.navigate(
                         MovieDetailRoute(
