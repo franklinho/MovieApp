@@ -6,10 +6,10 @@ import androidx.room.PrimaryKey
 
 /**
  * Room cache entity. [orderIndex] preserves the trending rank order across paged inserts
- * (Room's PagingSource needs a stable ORDER BY). Mapped to/from the DTO in MovieMappers.kt.
+ * (Room's PagingSource needs a stable ORDER BY). Mapped to/from the API model in MovieMappers.kt.
  */
-@Entity
-data class Movie(
+@Entity(tableName = "Movie")
+data class MovieDto(
     @PrimaryKey val id: Int,
     @ColumnInfo(name = "title") val title: String?,
     @ColumnInfo(name = "overview") val overview: String?,

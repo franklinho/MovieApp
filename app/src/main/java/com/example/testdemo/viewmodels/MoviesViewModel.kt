@@ -14,9 +14,8 @@ import kotlinx.coroutines.flow.flatMapLatest
 import javax.inject.Inject
 
 /**
- * Slice 7: pure data surface — exposes a `Flow<PagingData<Movie>>` that switches between the
- * trending (Room-backed) and search (network) pagers. Navigation now lives in Compose
- * (MovieAppNavHost), so the old `launchMovieFragment` is gone.
+ * Exposes a `Flow<PagingData<Movie>>` that switches between the trending Room-backed pager
+ * and the network-only search pager.
  */
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel

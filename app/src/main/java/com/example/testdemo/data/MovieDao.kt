@@ -10,13 +10,13 @@ import androidx.room.Query
 interface MovieDao {
 
     @Query("SELECT * FROM Movie ORDER BY order_index ASC")
-    fun pagingSource(): PagingSource<Int, Movie>
+    fun pagingSource(): PagingSource<Int, MovieDto>
 
     @Query("SELECT COUNT(*) FROM Movie")
     suspend fun count(): Int
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertAll(movies: List<Movie>)
+    suspend fun insertAll(movies: List<MovieDto>)
 
     @Query("DELETE FROM Movie")
     suspend fun clearAll()

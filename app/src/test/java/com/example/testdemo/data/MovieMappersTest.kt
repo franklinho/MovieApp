@@ -1,14 +1,14 @@
 package com.example.testdemo.data
 
-import com.example.testdemo.models.Movie as MovieDto
+import com.example.testdemo.models.Movie
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
 class MovieMappersTest {
 
     @Test
-    fun `dto maps to entity with given orderIndex`() {
-        val dto = MovieDto(
+    fun `model maps to entity with given orderIndex`() {
+        val movie = Movie(
             id = 1,
             title = "Inception",
             overview = "A thief who steals corporate secrets.",
@@ -17,7 +17,7 @@ class MovieMappersTest {
             backdropPath = "/backdrop.jpg",
         )
 
-        val entity = dto.toEntity(orderIndex = 7)
+        val entity = movie.toEntity(orderIndex = 7)
 
         assertEquals(1, entity.id)
         assertEquals("Inception", entity.title)
@@ -26,8 +26,8 @@ class MovieMappersTest {
     }
 
     @Test
-    fun `entity round-trips back to an equal dto`() {
-        val dto = MovieDto(
+    fun `entity round-trips back to an equal model`() {
+        val movie = Movie(
             id = 42,
             title = "Interstellar",
             overview = "Explorers travel through a wormhole.",
@@ -36,6 +36,6 @@ class MovieMappersTest {
             backdropPath = "/b.jpg",
         )
 
-        assertEquals(dto, dto.toEntity(orderIndex = 0).toDto())
+        assertEquals(movie, movie.toEntity(orderIndex = 0).toModel())
     }
 }

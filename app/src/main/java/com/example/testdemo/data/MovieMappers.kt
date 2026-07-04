@@ -1,8 +1,8 @@
 package com.example.testdemo.data
 
-import com.example.testdemo.models.Movie as MovieDto
+import com.example.testdemo.models.Movie
 
-fun MovieDto.toEntity(orderIndex: Int): Movie = Movie(
+fun Movie.toEntity(orderIndex: Int): MovieDto = MovieDto(
     id = id,
     title = title,
     overview = overview,
@@ -12,7 +12,7 @@ fun MovieDto.toEntity(orderIndex: Int): Movie = Movie(
     orderIndex = orderIndex,
 )
 
-fun Movie.toDto(): MovieDto = MovieDto(
+fun MovieDto.toModel(): Movie = Movie(
     id = id,
     title = title,
     overview = overview,
