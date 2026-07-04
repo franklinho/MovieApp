@@ -38,9 +38,7 @@ fun TestDemoTheme(
         else -> LightColorScheme
     }
 
-    // NOTE: system-bar styling intentionally omitted here — the old `(view.context as Activity)`
-    // status-bar tint crashed when Compose is hosted in a Fragment/Hilt context, and is deprecated.
-    // Slice 8 handles system bars via enableEdgeToEdge() at the Activity level.
+    // NOTE: system-bar styling intentionally omitted here because it belongs at the Activity level.
     MaterialTheme(
         colorScheme = colorScheme,
         typography = Typography,

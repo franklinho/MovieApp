@@ -1,14 +1,24 @@
 package com.example.testdemo.activities
 
 import android.os.Bundle
-import androidx.fragment.app.FragmentActivity
-import com.example.testdemo.R
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import com.example.testdemo.ui.MovieAppNavHost
+import com.example.testdemo.ui.theme.TestDemoTheme
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class MainActivity : FragmentActivity() {
+class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
+        installSplashScreen()
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        enableEdgeToEdge()
+        setContent {
+            TestDemoTheme {
+                MovieAppNavHost()
+            }
+        }
     }
 }
