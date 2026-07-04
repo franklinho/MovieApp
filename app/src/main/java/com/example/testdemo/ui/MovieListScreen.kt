@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Card
@@ -39,7 +38,7 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
 import coil3.compose.AsyncImage
 import com.example.testdemo.models.Movie
-import com.example.testdemo.networking.MovieService
+import com.example.testdemo.networking.ImageUrls
 import com.example.testdemo.ui.theme.TestDemoTheme
 import com.example.testdemo.viewmodels.MoviesViewModel
 
@@ -112,7 +111,7 @@ private fun MoviePoster(
         val poster = movie.posterPath
         if (poster != null) {
             AsyncImage(
-                model = MovieService.getFullImageUrl(poster),
+                model = ImageUrls.fullImageUrl(poster),
                 contentDescription = movie.title,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier.fillMaxSize(),
