@@ -28,6 +28,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -50,6 +51,8 @@ fun MovieListScreen(
 ) {
     val movies = viewModel.movies.collectAsLazyPagingItems()
     val query by viewModel.searchQuery.collectAsState()
+    val windowSize = LocalWindowInfo.current.containerSize
+    val gridColumns = if (windowSize.width > windowSize.height) 5 else 3
     val keyboardController = LocalSoftwareKeyboardController.current
 
     Column(
@@ -71,7 +74,7 @@ fun MovieListScreen(
 
         Box(modifier = Modifier.fillMaxSize()) {
             LazyVerticalGrid(
-                columns = GridCells.Fixed(3),
+                columns = GridCells.Fixed(gridColumns),
                 modifier = Modifier.fillMaxSize(),
                 contentPadding = PaddingValues(8.dp),
             ) {
