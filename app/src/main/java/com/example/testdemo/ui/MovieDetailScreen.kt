@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -28,6 +29,7 @@ import com.example.testdemo.viewmodels.MovieDetailUiState
 fun MovieDetailScreen(
     uiState: MovieDetailUiState,
     onBack: () -> Unit,
+    onRetry: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val movie = uiState.movie
@@ -48,13 +50,23 @@ fun MovieDetailScreen(
                     CircularProgressIndicator()
                 }
             }
+
             uiState.errorMessage != null -> {
-                Text(
-                    text = uiState.errorMessage,
-                    style = MaterialTheme.typography.bodyMedium,
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier.padding(16.dp),
-                )
+                ) {
+                    Text(
+                        text = uiState.errorMessage,
+                        style = MaterialTheme.typography.bodyMedium,
+                        modifier = Modifier.padding(16.dp),
+                    )
+                    Button(onClick = onRetry, modifier = Modifier.padding(top = 8.dp)) {
+                        Text("Retry")
+                    }
+                }
             }
+
             movie != null -> {
                 if (movie.backdropPath != null) {
                     AsyncImage(
@@ -77,6 +89,7 @@ fun MovieDetailScreen(
                     modifier = Modifier.padding(horizontal = 16.dp),
                 )
             }
+
             else -> Unit
         }
         TextButton(onClick = onBack, modifier = Modifier.padding(8.dp)) {

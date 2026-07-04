@@ -15,6 +15,7 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -61,7 +62,9 @@ fun MovieListScreen(
             onValueChange = viewModel::updateSearchQuery,
             label = { Text("Search movies") },
             singleLine = true,
-            modifier = Modifier.fillMaxWidth().padding(8.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp),
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
             keyboardActions = KeyboardActions(onSearch = { keyboardController?.hide() }),
         )
@@ -86,12 +89,50 @@ fun MovieListScreen(
             when (val refresh = movies.loadState.refresh) {
                 is LoadState.Loading ->
                     CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+
                 is LoadState.Error ->
-                    Text(
-                        text = refresh.error.localizedMessage ?: "Something went wrong",
-                        modifier = Modifier.align(Alignment.Center).padding(16.dp),
+                    StatusMessage(
+                        message = refresh.error.localizedMessage ?: "Something went wrong",
+                        actionLabel = "Retry",
+                        onAction = { movies.retry() },
+                        modifier = Modifier
+                            .align(Alignment.Center)
+                            .padding(16.dp),
                     )
-                else -> Unit
+                is LoadState.NotLoading ->
+                    if (movies.itemCount == 0) {
+                        StatusMessage(
+                            message = if (query.isBlank()) "No movies available" else "No movies found",
+                            actionLabel = if (query.isBlank()) null else "Clear",
+                            onAction = if (query.isBlank()) null else { { viewModel.updateSearchQuery("") } },
+                            modifier = Modifier
+                                .align(Alignment.Center)
+                                .padding(16.dp),
+                        )
+                    }
+            }
+        }
+    }
+}
+
+@Composable
+private fun StatusMessage(
+    message: String,
+    modifier: Modifier = Modifier,
+    actionLabel: String? = null,
+    onAction: (() -> Unit)? = null,
+) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = modifier,
+    ) {
+        Text(
+            text = message,
+            style = MaterialTheme.typography.bodyMedium,
+        )
+        if (actionLabel != null && onAction != null) {
+            Button(onClick = onAction, modifier = Modifier.padding(top = 8.dp)) {
+                Text(actionLabel)
             }
         }
     }

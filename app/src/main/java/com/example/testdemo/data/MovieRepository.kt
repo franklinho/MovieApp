@@ -5,6 +5,7 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.map
+import androidx.room.withTransaction
 import com.example.testdemo.models.Movie
 import com.example.testdemo.networking.MovieApi
 import com.example.testdemo.networking.SearchPagingSource
@@ -35,6 +36,13 @@ class MovieRepository @Inject constructor(
         pagingSourceFactory = { SearchPagingSource(movieApi, query) },
     ).flow
 
-    suspend fun movie(movieId: Int): Movie? =
-        movieDao.findById(movieId)?.toModel()
+    suspend fun movie(movieId: Int): Movie {
+        movieDao.findById(movieId)?.let { return it.toModel() }
+
+        val movie = movieApi.movieDetails(movieId)
+        database.withTransaction {
+            movieDao.insertAll(listOf(movie.toDto(orderIndex = movieDao.count())))
+        }
+        return movie
+    }
 }

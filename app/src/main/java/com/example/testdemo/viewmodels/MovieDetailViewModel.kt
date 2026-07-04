@@ -33,14 +33,22 @@ class MovieDetailViewModel @Inject constructor(
     val uiState: StateFlow<MovieDetailUiState> = _uiState.asStateFlow()
 
     init {
+        loadMovie()
+    }
+
+    fun retry() {
+        loadMovie()
+    }
+
+    private fun loadMovie() {
         viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = it.movie == null, errorMessage = null) }
             runCatching {
                 repository.movie(route.movieId)
             }.onSuccess { movie ->
                 _uiState.value = MovieDetailUiState(
                     movie = movie,
                     isLoading = false,
-                    errorMessage = if (movie == null) "Movie not found" else null,
                 )
             }.onFailure { error ->
                 _uiState.update {
