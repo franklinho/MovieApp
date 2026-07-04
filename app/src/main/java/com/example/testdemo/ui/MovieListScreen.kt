@@ -34,7 +34,7 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
 import coil3.compose.AsyncImage
 import com.example.testdemo.models.Movie
-import com.example.testdemo.networking.MovieService
+import com.example.testdemo.networking.ImageUrls
 import com.example.testdemo.viewmodels.MoviesViewModel
 
 @Composable
@@ -92,7 +92,7 @@ private fun MoviePoster(movie: Movie, onClick: () -> Unit) {
     val poster = movie.posterPath
     if (poster != null) {
         AsyncImage(
-            model = MovieService.getFullImageUrl(poster),
+            model = ImageUrls.fullImageUrl(poster),
             contentDescription = movie.title,
             contentScale = ContentScale.Crop,
             modifier = Modifier.aspectRatio(0.66f).clickable(onClick = onClick),
